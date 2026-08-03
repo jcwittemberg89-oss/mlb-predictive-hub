@@ -106,6 +106,33 @@ st.markdown("---")
 # Sección de Estadísticas de Equipos
 st.subheader("📈 Sabermetría Registrada en la Web (Los 30 Equipos)")
 st.dataframe(df_stats, use_container_width=True)
+from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score
+
+# --- SECCIÓN DE EVALUACIÓN DE CONFIABILIDAD ---
+st.markdown("---")
+st.subheader("🧪 Auditoría y Confiabilidad del Motor (Backtesting)")
+
+if st.button("📊 Evaluar Precisión del Modelo", use_container_width=True):
+    # Predicciones del modelo sobre el propio set de datos para medir ajuste
+    y_pred = modelo.predict(X_scaled)
+    y_prob = modelo.predict_proba(X_scaled)[:, 1]
+    
+    # Calcular métricas
+    accuracy = accuracy_score(y, y_pred) * 100
+    auc_score = roc_auc_score(y, y_prob)
+    matriz = confusion_matrix(y, y_pred)
+    
+    # Mostrar resultados en métricas visuales de Streamlit
+    col_e1, col_e2 = st.columns(2)
+    col_e1.metric(label="🎯 Exactitud Global (Accuracy)", value=f"{accuracy:.1f}%")
+    col_e2.metric(label="📈 Poder Predictivo (AUC Score)", value=f"{auc_score:.3f}")
+    
+    st.info("""
+    **¿Cómo interpretar estos valores?**
+    * **AUC > 0.60:** El motor tiene capacidad predictiva real por encima del azar basándose en la sabermetría de bateo y pitcheo.
+    * **Accuracy:** Porcentaje de aciertos teóricos al evaluar el comportamiento histórico de las franquicias.
+    """)
+    
          
 
     
